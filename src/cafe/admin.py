@@ -2,6 +2,7 @@ from fastapi import Request
 from wtforms import SelectField
 from wtforms.validators import Optional, Regexp
 
+from src.auth.enums import Role
 from src.cafe.enums import EmploymentType
 from src.cafe.models import Employee, Position, Category, Product
 from src.cafe.formattes import phone
@@ -14,6 +15,9 @@ from src.admin.base import BaseAdmin
 
 
 class EmployeeAdmin(BaseAdmin, model=Employee):
+    allowed_roles = {Role.ADMIN.name, Role.MANAGER.name}
+    write_roles = {Role.ADMIN.name}
+
     column_list = [
         Employee.full_name,
         Employee.position,
@@ -116,6 +120,9 @@ class EmployeeAdmin(BaseAdmin, model=Employee):
 
 
 class PositionAdmin(BaseAdmin, model=Position):
+    allowed_roles = {Role.ADMIN.name, Role.MANAGER.name}
+    write_roles = {Role.ADMIN.name}
+
     column_list = [
         Position.name,
         Position.description,
@@ -163,6 +170,8 @@ class PositionAdmin(BaseAdmin, model=Position):
 
 
 class CategoryAdmin(BaseAdmin, model=Category):
+    allowed_roles = write_roles = {Role.ADMIN.name, Role.MANAGER.name}
+
     column_list = [
         Category.name,
         Category.description,
@@ -195,6 +204,8 @@ class CategoryAdmin(BaseAdmin, model=Category):
 
 
 class ProductAdmin(BaseAdmin, model=Product):
+    allowed_roles = write_roles = {Role.ADMIN.name, Role.MANAGER.name}
+
     column_list = [
         Product.name,
         Product.description,

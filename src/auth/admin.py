@@ -3,10 +3,7 @@ from typing import Any
 from fastapi import Request
 from wtforms import SelectField
 
-from src.admin.filters import (
-    RuOperationColumnFilter,
-    RuBooleanFilter,
-)
+from src.admin.filters import RuBooleanFilter
 from src.auth.enums import Role
 from src.auth.models import User
 from src.auth.utils import hash_password
@@ -14,6 +11,9 @@ from src.admin.base import BaseAdmin
 
 
 class UserAdmin(BaseAdmin, model=User):
+    allowed_roles = {Role.ADMIN.name}
+    write_roles = {Role.ADMIN.name}
+
     column_list = [
         User.username,
         User.is_active,
@@ -34,8 +34,7 @@ class UserAdmin(BaseAdmin, model=User):
     column_searchable_list = [User.username]
     column_sortable_list = [User.username, User.is_active, User.role]
     column_filters = [
-        RuOperationColumnFilter(User.role),
-        RuBooleanFilter(User.is_active),
+        RuBooleanFilter(User.is_active, title="Статус"),
     ]
 
     form_overrides = {"role": SelectField}
