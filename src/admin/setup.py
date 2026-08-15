@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from sqladmin import Admin, I18nConfig
+from sqladmin._menu import CategoryMenu
+
 from src.admin.auth import AdminAuth
 from src.auth.admin import UserAdmin
 from src.cafe.admin import EmployeeAdmin, PositionAdmin, CategoryAdmin, ProductAdmin
@@ -7,7 +9,16 @@ from src.core.config import settings
 from src.core.database import session_maker
 
 
+def _category_is_visible(self: CategoryMenu, request: Request) -> bool:
+    return any(
+        child.is_visible(request) and child.is_accessible(request)
+        for child in self.children
+    )
+
+
 def setup_admin(app: FastAPI) -> None:
+    CategoryMenu.is_visible = _category_is_visible
+
     admin = Admin(
         app,
         session_maker=session_maker,
