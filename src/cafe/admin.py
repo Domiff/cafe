@@ -1,7 +1,4 @@
-import time
-
 from fastapi import Request
-from sqladmin import ModelView
 from wtforms import SelectField
 from wtforms.validators import Optional, Regexp
 
@@ -13,14 +10,7 @@ from src.admin.filters import (
     RuBooleanFilter,
     RuForeignKeyFilter,
 )
-
-
-class BaseAdmin(ModelView):
-    use_pretty_export = True
-    page_size = 25
-
-    def get_export_name(self, export_type: str) -> str:
-        return f"{self.model.__name__.lower()}_{time.strftime("%Y-%m-%d_%H-%M")}.{export_type}"
+from src.core.admin import BaseAdmin
 
 
 class EmployeeAdmin(BaseAdmin, model=Employee):
