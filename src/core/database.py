@@ -22,11 +22,11 @@ class Base(DeclarativeBase):
 
 
 engine = create_async_engine(settings.db.DB_URL)
-new_session = async_sessionmaker(engine, expire_on_commit=False)
+session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_session() -> AsyncGenerator[AsyncSession]:
-    async with new_session() as session:
+    async with session_maker() as session:
         yield session
 
 
@@ -35,7 +35,7 @@ SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 async def ping_database() -> bool:
     try:
-        async with new_session() as session:
+        async with session_maker() as session:
             await session.execute(text("SELECT 1"))
         return True
     except Exception as e:
