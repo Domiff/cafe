@@ -44,9 +44,7 @@ class LoginSettings(AppSettings):
 
 
 class AdminSettings(AppSettings):
-    USERNAME: str = "admin"
-    PASSWORD: str = "admin"
-    SECRET_KEY: str = "admin"
+    SECRET_KEY: str
 
 
 class StorageSettings(AppSettings):
