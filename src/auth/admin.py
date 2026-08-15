@@ -10,7 +10,7 @@ from src.admin.filters import (
 from src.auth.enums import Role
 from src.auth.models import User
 from src.auth.utils import hash_password
-from src.core.admin import BaseAdmin
+from src.admin.base import BaseAdmin
 
 
 class UserAdmin(BaseAdmin, model=User):

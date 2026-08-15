@@ -10,7 +10,7 @@ from src.admin.filters import (
     RuBooleanFilter,
     RuForeignKeyFilter,
 )
-from src.core.admin import BaseAdmin
+from src.admin.base import BaseAdmin
 
 
 class EmployeeAdmin(BaseAdmin, model=Employee):
