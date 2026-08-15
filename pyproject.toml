@@ -1,0 +1,24 @@
+[project]
+name = "cafe"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "aioboto3>=15.5.0",
+    "aiosqlite>=0.22.1",
+    "alembic>=1.19.1",
+    "fastapi-storages[image,s3,sqlalchemy]>=0.5.0",
+    "fastapi[standard]>=0.141.1",
+    "itsdangerous>=2.2.0",
+    "logtail-python>=0.4.0",
+    "pydantic-settings>=2.15.0",
+    "sqladmin[full]>=0.31.0",
+    "sqlalchemy>=2.0.52",
+]
+
+[tool.fastapi]
+entrypoint = "src.main:app"
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+]
