@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ landing.title }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero__body">
+    <h1 class="hero__title">{{ landing.title }}</h1>
+    {% if landing.subtitle %}
+    <p class="hero__subtitle">{{ landing.subtitle }}</p>
+    {% endif %}
+
+    <p class="hero__facts">
+      <span>{{ landing.address }}</span>
+      {% if landing.working_hours %}
+      <span class="hero__sep">·</span>
+      <span>{{ landing.working_hours }}</span>
+      {% endif %}
+    </p>
+
+    <div class="hero__actions">
+      <a class="button button--accent" href="/menu">Смотреть меню</a>
+      {% if landing.phone %}
+      <a class="button" href="tel:{{ landing.phone }}">{{ landing.phone }}</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if landing.hero_image %}
+  <div class="hero__media">
+    <img src="{{ landing.hero_image }}" alt="{{ landing.title }}">
+  </div>
+  {% endif %}
+</section>
+
+{% set amenities = [
+  (landing.has_wifi, 'Wi-Fi'),
+  (landing.has_sockets, 'Розетки'),
+  (landing.has_terrace, 'Веранда'),
+  (landing.is_pet_friendly, 'Можно с питомцем'),
+  (landing.has_takeaway, 'Навынос'),
+] %}
+{% if amenities | selectattr(0) | list %}
+<div class="amenities">
+  {% for enabled, label in amenities %}
+    {% if enabled %}<span class="chip">{{ label }}</span>{% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if landing.about_text %}
+<section class="section" id="about">
+  <div class="section__head">
+    <h2 class="section__title">{{ landing.about_title or 'О нас' }}</h2>
+  </div>
+  <p class="prose">{{ landing.about_text }}</p>
+</section>
+{% endif %}
+
+<section class="section" id="contacts">
+  <div class="section__head">
+    <h2 class="section__title">Как нас найти</h2>
+  </div>
+
+  <dl class="specs">
+    <div class="specs__row">
+      <dt>Адрес</dt>
+      <dd>
+        {% if landing.map_url %}<a href="{{ landing.map_url }}" target="_blank" rel="noopener">{{ landing.address }}</a>
+        {% else %}{{ landing.address }}{% endif %}
+      </dd>
+    </div>
+    {% if landing.working_hours %}
+    <div class="specs__row"><dt>Часы работы</dt><dd>{{ landing.working_hours }}</dd></div>
+    {% endif %}
+    {% if landing.phone %}
+    <div class="specs__row"><dt>Телефон</dt><dd><a href="tel:{{ landing.phone }}">{{ landing.phone }}</a></dd></div>
+    {% endif %}
+    {% if landing.email %}
+    <div class="specs__row"><dt>Почта</dt><dd><a href="mailto:{{ landing.email }}">{{ landing.email }}</a></dd></div>
+    {% endif %}
+  </dl>
+
+  {% if landing.vk_url or landing.reviews_url %}
+  <div class="hero__actions">
+    {% if landing.vk_url %}
+    <a class="button" href="{{ landing.vk_url }}" target="_blank" rel="noopener">ВКонтакте</a>
+    {% endif %}
+    {% if landing.reviews_url %}
+    <a class="button" href="{{ landing.reviews_url }}" target="_blank" rel="noopener">Отзывы</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
