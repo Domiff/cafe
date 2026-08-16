@@ -56,12 +56,31 @@ class StorageSettings(AppSettings):
     AWS_S3_USE_SSL: bool = True
 
 
+class RedisSettings(AppSettings):
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    CONNECTION_POOL_MAXSIZE: int = 10
+    EXPIRE: int = 3600
+
+    def model_post_init(self, __context) -> None:
+        object.__setattr__(
+            self, "REDIS_HOST", "redis" if self.IS_DOCKERIZED else "localhost"
+        )
+        object.__setattr__(
+            self,
+            "REDIS_URL",
+            f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}",
+        )
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
     admin: AdminSettings = AdminSettings()
     logging: LoginSettings = LoginSettings()
     storage: StorageSettings = StorageSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 settings = Settings()

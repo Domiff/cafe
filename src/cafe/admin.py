@@ -1,7 +1,8 @@
-from fastapi import Request
+from fastapi import Request, Response
 from wtforms import SelectField
 from wtforms.validators import Optional, Regexp
 
+from src.core.cache import invalidate_cache
 from src.auth.enums import Role
 from src.cafe.enums import EmploymentType
 from src.cafe.models import Employee, Position, Category, Product
@@ -80,8 +81,6 @@ class EmployeeAdmin(BaseAdmin, model=Employee):
         },
         "employment_type": {
             "choices": [(e.name, e.value) for e in EmploymentType],
-            # без coerce SelectField сравнивает choices со str(enum), а у StrEnum
-            # это значение, а не имя — текущий вариант не подсвечивается
             "coerce": lambda v: v.name if isinstance(v, EmploymentType) else str(v),
         },
     }
@@ -205,6 +204,14 @@ class CategoryAdmin(BaseAdmin, model=Category):
     name = "Категория"
     name_plural = "Категории"
 
+    async def after_model_change(
+            self, data: dict, model: Category, is_created: bool, request: Request
+    ) -> Response | None:
+        await invalidate_cache("menu")
+
+    async def after_model_delete(self, model: Category, request: Request) -> None:
+        await invalidate_cache("menu")
+
 
 class ProductAdmin(BaseAdmin, model=Product):
     allowed_roles = write_roles = {Role.ADMIN.name, Role.MANAGER.name}
@@ -283,3 +290,11 @@ class ProductAdmin(BaseAdmin, model=Product):
 
     name = "Блюдо"
     name_plural = "Блюда"
+
+    async def after_model_change(
+        self, data: dict, model: Product, is_created: bool, request: Request
+    ) -> Response | None:
+        await invalidate_cache("menu")
+
+    async def after_model_delete(self, model: Product, request: Request) -> None:
+        await invalidate_cache("menu")

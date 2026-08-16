@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from src.core.cache import setup_cache
 from src.admin.setup import setup_admin
 from src.cafe.router import router as cafe_router
 from src.core.config import settings
@@ -12,6 +13,8 @@ logger = get_logger(__name__)
 
 async def lifespan(app: FastAPI):
     logger.debug("Starting application")
+
+    setup_cache("cafe")
 
     yield
 

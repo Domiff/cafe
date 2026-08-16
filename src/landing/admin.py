@@ -1,3 +1,6 @@
+from fastapi import Request, Response
+
+from src.core.cache import invalidate_cache
 from src.admin.base import BaseAdmin
 from src.auth.enums import Role
 from src.landing.models import Landing
@@ -88,3 +91,8 @@ class LandingAdmin(BaseAdmin, model=Landing):
 
     name = "Лендинг"
     name_plural = "Лендинг"
+
+    async def after_model_change(
+        self, data: dict, model: Landing, is_created: bool, request: Request
+    ) -> Response | None:
+        await invalidate_cache("landing")
