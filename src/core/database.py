@@ -40,3 +40,9 @@ async def ping_database() -> bool:
         return True
     except Exception as e:
         return False
+
+
+class BaseRepository:
+    def __init__(self, session: AsyncSession):
+        self.session: AsyncSession = session
+
