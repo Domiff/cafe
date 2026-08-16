@@ -28,8 +28,11 @@ class AdminAuth(AuthenticationBackend):
             return False
 
         try:
-            check_password(password, user.password)
+            is_valid = check_password(password, user.password)
         except UnknownHashError:
+            return False
+
+        if not is_valid:
             return False
 
         request.session.update({"user": user.username, "role": user.role.name})
