@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — Cafe{% endblock %}
+
+{% block content %}
+<nav class="crumbs">
+  <a href="/menu">Меню</a>
+  <span class="crumbs__sep">/</span>
+  <span>{{ product.category.name }}</span>
+</nav>
+
+<article class="detail">
+  <div class="detail__media">
+    {% if product.image_url %}
+    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+    {% else %}
+    <div class="detail__placeholder">нет фото</div>
+    {% endif %}
+  </div>
+
+  <div class="detail__body">
+    <h1 class="page-title">{{ product.name }}</h1>
+
+    {% if product.description %}
+    <p class="detail__lead">{{ product.description }}</p>
+    {% endif %}
+
+    <p class="detail__price">
+      <span class="price">{{ product.price | int }} ₽</span>
+      {% if not product.is_available %}
+      <span class="chip chip--warn">Нет в наличии</span>
+      {% endif %}
+    </p>
+
+    <dl class="specs">
+      {% if product.volume_ml %}
+      <div class="specs__row"><dt>Объём</dt><dd>{{ product.volume_ml }} мл</dd></div>
+      {% endif %}
+      {% if product.weight_grams %}
+      <div class="specs__row"><dt>Вес</dt><dd>{{ product.weight_grams }} г</dd></div>
+      {% endif %}
+      {% if product.calories %}
+      <div class="specs__row"><dt>Калорийность</dt><dd>{{ product.calories }} ккал</dd></div>
+      {% endif %}
+      <div class="specs__row"><dt>Категория</dt><dd>{{ product.category.name }}</dd></div>
+    </dl>
+
+    <a class="button" href="/menu">← Ко всему меню</a>
+  </div>
+</article>
+{% endblock %}

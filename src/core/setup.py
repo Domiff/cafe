@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
+from src.cafe.router import router
 from src.admin.setup import setup_admin
 from src.core.config import settings
 from src.core.logging import get_logger
@@ -22,6 +24,8 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         openapi_url="/openapi.json" if settings.app.IS_DEBUG else None,
     )
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    app.include_router(router)
 
     setup_admin(app)
 
