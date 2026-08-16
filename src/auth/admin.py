@@ -41,6 +41,7 @@ class UserAdmin(BaseAdmin, model=User):
     form_args = {
         "role": {
             "choices": [(e.name, e.value) for e in Role],
+            "coerce": lambda v: v.name if isinstance(v, Role) else str(v),
         }
     }
     form_create_rules = [

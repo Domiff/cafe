@@ -80,6 +80,9 @@ class EmployeeAdmin(BaseAdmin, model=Employee):
         },
         "employment_type": {
             "choices": [(e.name, e.value) for e in EmploymentType],
+            # без coerce SelectField сравнивает choices со str(enum), а у StrEnum
+            # это значение, а не имя — текущий вариант не подсвечивается
+            "coerce": lambda v: v.name if isinstance(v, EmploymentType) else str(v),
         },
     }
     form_create_rules = [
