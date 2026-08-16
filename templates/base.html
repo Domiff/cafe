@@ -3,17 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Cafe{% endblock %}</title>
+  <title>{% block title %}Зерно{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', path='/base.css') }}">
   {% block head %}{% endblock %}
 </head>
 <body>
 <header class="site-header">
   <div class="container site-header__inner">
-    <a class="site-brand" href="/">Cafe</a>
+    <a class="site-brand" href="/">Зерно</a>
+
     <nav class="site-nav">
       <a href="/menu">Меню</a>
+      <a href="/#about">О нас</a>
+      <a href="/#contacts">Контакты</a>
     </nav>
+
+    <div class="site-meta">
+      <span>Пн–Пт 8:00–22:00, Сб–Вс 9:00–23:00</span>
+      <a class="site-meta__phone" href="tel:+79001184201">+7 900 118-42-01</a>
+    </div>
   </div>
 </header>
 
@@ -23,7 +31,7 @@
 
 <footer class="site-footer">
   <div class="container">
-    {% block footer %}Cafe — кофе и завтраки{% endblock %}
+    {% block footer %}Зерно — ул. Пушкина, 12{% endblock %}
   </div>
 </footer>
 </body>
