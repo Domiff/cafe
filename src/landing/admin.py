@@ -58,7 +58,7 @@ class LandingAdmin(BaseAdmin, model=Landing):
         Landing.has_takeaway: "Навынос",
     }
 
-    form_edit_rules = [
+    form_create_rules = form_edit_rules = [
         "title",
         "subtitle",
         "hero_image",
