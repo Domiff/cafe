@@ -10,7 +10,6 @@ class LandingAdmin(BaseAdmin, model=Landing):
     allowed_roles = {Role.ADMIN.name, Role.MANAGER.name}
     write_roles = {Role.ADMIN.name}
 
-    can_create = False
     can_delete = False
     can_export = False
 
