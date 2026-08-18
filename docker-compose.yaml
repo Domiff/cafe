@@ -1,0 +1,53 @@
+services:
+  backend:
+    container_name: backend-cafe
+    build:
+      dockerfile: Dockerfile
+    environment:
+      IS_DOCKERIZED: "true"
+    env_file:
+      .env
+    command: ./run.sh
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      pg:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+
+  pg:
+    container_name: pg-cafe
+    image: postgres:16
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      start_period: 5s
+      interval: 1m
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    container_name: redis-cafe
+    image: redis:8-alpine
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      start_period: 5s
+      interval: 1m
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:
