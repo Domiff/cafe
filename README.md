@@ -27,60 +27,76 @@ the template renders a full URL.
 automatically whenever the underlying record changes in the admin panel, so edits
 show up immediately instead of waiting for the TTL.
 
-## Requirements
+## Configuration
 
-- Python 3.14
-- Redis (page cache)
-- An S3-compatible bucket (image uploads)
+Both ways of running the project read the same `.env` file in the project root:
 
-SQLite is used by default, so no database server is needed to get started.
+```
+APP_PORT=8080
 
-## Getting started
+SECRET_KEY=<random string, e.g. `python -c "import secrets; print(secrets.token_urlsafe(32))"`>
 
-Install dependencies:
+POSTGRES_DB=cafe
+POSTGRES_USER=cafe
+POSTGRES_PASSWORD=<password>
+POSTGRES_HOST=pg
+POSTGRES_PORT=5432
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+EXPIRE=3600
+
+AWS_ACCESS_KEY_ID=<key>
+AWS_SECRET_ACCESS_KEY=<secret>
+AWS_S3_BUCKET_NAME=<bucket>
+AWS_S3_ENDPOINT_URL=<host, without the protocol>
+AWS_DEFAULT_ACL=public-read
+AWS_S3_USE_SSL=True
+
+LOGTAIL_TOKEN=<token>
+LOGTAIL_HOST=<host>
+```
+
+`SECRET_KEY` signs admin session cookies, and the Logtail pair is required at
+startup — set them even when you are only trying the project out. Everything else
+has a working default.
+
+`IS_DOCKERIZED` decides where the app looks for its dependencies: when it is set,
+PostgreSQL replaces SQLite and the Redis host becomes the compose service name.
+Docker Compose sets it for you; leave it alone when running locally.
+
+## Running with Docker
+
+```bash
+docker compose up --build
+```
+
+This starts the app, PostgreSQL and Redis. Migrations run automatically on
+startup, so the only manual step is the first administrator:
+
+```bash
+docker compose exec backend python -m scripts.create_user -u admin -r ADMIN
+```
+
+Templates and static files are mounted from the host, so edits to them show up
+after a page refresh without rebuilding the image.
+
+## Running locally
+
+Requires Python 3.14 and a running Redis. SQLite is used instead of PostgreSQL,
+so no database server is needed.
 
 ```bash
 uv sync
-```
-
-Create a `.env` file in the project root:
-
-```
-CAFE_SECRET_KEY=<random string, e.g. `python -c "import secrets; print(secrets.token_urlsafe(32))"`>
-
-CAFE_LOGTAIL_TOKEN=<logtail token>
-CAFE_LOGTAIL_HOST=<logtail host>
-
-CAFE_AWS_ACCESS_KEY_ID=<key>
-CAFE_AWS_SECRET_ACCESS_KEY=<secret>
-CAFE_AWS_S3_BUCKET_NAME=<bucket>
-CAFE_AWS_S3_ENDPOINT_URL=<host, without the protocol>
-CAFE_AWS_DEFAULT_ACL=public-read
-CAFE_AWS_S3_USE_SSL=True
-```
-
-Every setting is read with a `CAFE_` prefix. Database, Redis and debug options
-have sensible defaults and only need to be set when you deviate from them.
-
-Apply migrations:
-
-```bash
 uv run alembic upgrade head
-```
-
-Create the first administrator:
-
-```bash
 uv run python -m scripts.create_user -u admin -r ADMIN
+uv run fastapi dev src/main.py
 ```
 
 The password is asked interactively, so it never lands in your shell history.
 
-Run the app:
-
-```bash
-uv run fastapi dev src/main.py
-```
+## Pages
 
 - `/` — landing page
 - `/menu` — menu
@@ -89,17 +105,6 @@ uv run fastapi dev src/main.py
 
 The landing page needs its single record to exist before it renders; create it
 from the admin panel on first run.
-
-## Configuration
-
-| Prefix group | Purpose |
-|---|---|
-| `CAFE_IS_DEBUG`, `CAFE_IS_DOCKERIZED` | Environment switches. `IS_DOCKERIZED` swaps SQLite for PostgreSQL and `localhost` for in-cluster hostnames. |
-| `CAFE_SQLITE_URL`, `CAFE_POSTGRES_*` | Database connection. |
-| `CAFE_REDIS_*`, `CAFE_EXPIRE` | Cache backend and default TTL. |
-| `CAFE_AWS_*` | S3 credentials, bucket and ACL. |
-| `CAFE_SECRET_KEY` | Signs admin session cookies. |
-| `CAFE_LOGTAIL_*` | Log shipping. |
 
 ## Project layout
 
