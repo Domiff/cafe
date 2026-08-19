@@ -4,7 +4,8 @@ A small website and back office for a coffee shop. Visitors get a landing page a
 a menu; staff get an admin panel where every piece of that content is editable —
 dishes, categories, prices, photos, the landing copy, and the employee roster.
 
-Built with FastAPI, SQLAlchemy 2 (async), SQLAdmin and Jinja templates.
+Built with FastAPI, SQLAlchemy 2 (async), SQLAdmin, fastapi-users and Jinja
+templates.
 
 ## Features
 
@@ -20,6 +21,13 @@ throughout.
 work with the menu and read the staff directory but cannot touch staff accounts.
 Sections a role cannot open disappear from the sidebar entirely.
 
+**API accounts** — visitors register and log in over the API and get a JWT
+bearer token. These accounts are separate from the staff accounts above: the
+admin panel keeps its own session cookie, and the two contours share nothing but
+password hashing. Customer records are visible in the admin panel but read-only,
+apart from the flag that blocks an account. Password reset and email
+verification are not wired up yet — there is no mail transport in the project.
+
 **Image uploads** go to S3-compatible storage. The database keeps the object key,
 the template renders a full URL.
 
@@ -34,7 +42,11 @@ Both ways of running the project read the same `.env` file in the project root:
 ```
 APP_PORT=8080
 
-SECRET_KEY=<random string, e.g. `python -c "import secrets; print(secrets.token_urlsafe(32))"`>
+ADMIN_SECRET_KEY=<random string, e.g. `python -c "import secrets; print(secrets.token_urlsafe(32))"`>
+
+STRATEGY_SECRET_KEY=<random string>
+RESET_SECRET_KEY=<another one>
+VERIFICATION_SECRET_KEY=<and another>
 
 POSTGRES_DB=cafe
 POSTGRES_USER=cafe
@@ -58,9 +70,11 @@ LOGTAIL_TOKEN=<token>
 LOGTAIL_HOST=<host>
 ```
 
-`SECRET_KEY` signs admin session cookies, and the Logtail pair is required at
-startup — set them even when you are only trying the project out. Everything else
-has a working default.
+`ADMIN_SECRET_KEY` signs admin session cookies and the three user secrets sign
+API tokens; together with the Logtail pair they are required at startup, so set
+them even when you are only trying the project out. Use a different value for
+each. The reset and verification secrets are asked for even though the matching
+endpoints are not mounted yet. Everything else has a working default.
 
 `IS_DOCKERIZED` decides where the app looks for its dependencies: when it is set,
 PostgreSQL replaces SQLite and the Redis host becomes the compose service name.
@@ -101,6 +115,7 @@ The password is asked interactively, so it never lands in your shell history.
 - `/` — landing page
 - `/menu` — menu
 - `/admin` — admin panel
+- `/auth/register`, `/auth/login`, `/auth/logout` — API accounts
 - `/docs` — API docs (debug mode only)
 
 The landing page needs its single record to exist before it renders; create it
@@ -116,6 +131,7 @@ src/
   admin/     Admin panel building blocks: auth backend, base view, role mixin, filters
   cafe/      Menu domain: models, repository, routes, admin views
   staff/     Staff accounts and roles
+  users/     API accounts: model, manager, auth backend, admin view
   landing/   Landing page content
 templates/   Jinja templates, including sqladmin overrides
 static/      Stylesheet shared by the landing page and the menu
