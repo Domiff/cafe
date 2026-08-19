@@ -3,7 +3,7 @@ from wtforms import SelectField
 from wtforms.validators import Optional, Regexp
 
 from src.core.cache import invalidate_cache
-from src.auth.enums import Role
+from src.staff.enums import Role
 from src.cafe.enums import EmploymentType
 from src.cafe.models import Employee, Position, Category, Product
 from src.cafe.formattes import phone

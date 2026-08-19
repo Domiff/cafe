@@ -13,11 +13,11 @@ about text, contacts, amenities) and a menu grouped by category, with a detail
 page for every dish. Sold-out items disappear from the menu automatically.
 
 **Admin panel** at `/admin` — CRUD for dishes, categories, employees, positions,
-users and landing content. Russian labels, filters and column formatting
+staff accounts and landing content. Russian labels, filters and column formatting
 throughout.
 
 **Role-based access** — two roles. Administrators manage everything; managers
-work with the menu and read the staff directory but cannot touch user accounts.
+work with the menu and read the staff directory but cannot touch staff accounts.
 Sections a role cannot open disappear from the sidebar entirely.
 
 **Image uploads** go to S3-compatible storage. The database keeps the object key,
@@ -76,7 +76,7 @@ This starts the app, PostgreSQL and Redis. Migrations run automatically on
 startup, so the only manual step is the first administrator:
 
 ```bash
-docker compose exec backend python -m scripts.create_user -u admin -r ADMIN
+docker compose exec backend python -m scripts.create_staff -u admin -r ADMIN
 ```
 
 Templates and static files are mounted from the host, so edits to them show up
@@ -90,7 +90,7 @@ so no database server is needed.
 ```bash
 uv sync
 uv run alembic upgrade head
-uv run python -m scripts.create_user -u admin -r ADMIN
+uv run python -m scripts.create_staff -u admin -r ADMIN
 uv run fastapi dev src/main.py
 ```
 
@@ -112,10 +112,10 @@ The codebase is split by responsibility rather than by file type.
 
 ```
 src/
-  core/      Infrastructure: settings, database, cache, storage, templates
+  core/      Infrastructure: settings, database, cache, storage, templates, hashing
   admin/     Admin panel building blocks: auth backend, base view, role mixin, filters
   cafe/      Menu domain: models, repository, routes, admin views
-  auth/      Users, roles, password hashing
+  staff/     Staff accounts and roles
   landing/   Landing page content
 templates/   Jinja templates, including sqladmin overrides
 static/      Stylesheet shared by the landing page and the menu
@@ -131,7 +131,7 @@ models, repositories, routes and admin views, so a feature lives in one folder.
 Run scripts as modules from the project root, otherwise imports will not resolve:
 
 ```bash
-uv run python -m scripts.create_user --help
+uv run python -m scripts.create_staff --help
 ```
 
 Admin panel templates in `templates/sqladmin/` override the ones shipped with

@@ -2,40 +2,40 @@ from fastapi import Request
 from pwdlib.exceptions import UnknownHashError
 from sqladmin.authentication import AuthenticationBackend
 
-from src.auth.models import User
-from src.auth.repository import get_user_repo
-from src.auth.utils import check_password
+from src.staff.models import Staff
+from src.staff.repository import get_staff_repo
+from src.core.security import check_password
 from src.core.database import session_maker
 
 
 class AdminAuth(AuthenticationBackend):
     @staticmethod
-    async def _get_user(username: str) -> User | None:
+    async def _get_account(username: str) -> Staff | None:
         if not username:
             return None
 
         async with session_maker() as session:
-            return await get_user_repo(session).get_user_by_username(username)
+            return await get_staff_repo(session).get_by_username(username)
 
     async def login(self, request: Request) -> bool:
         form = await request.form()
         username = str(form.get("username", ""))
         password = str(form.get("password", ""))
 
-        user = await self._get_user(username)
+        account = await self._get_account(username)
 
-        if user is None or not user.is_active:
+        if account is None or not account.is_active:
             return False
 
         try:
-            is_valid = check_password(password, user.password)
+            is_valid = check_password(password, account.password)
         except UnknownHashError:
             return False
 
         if not is_valid:
             return False
 
-        request.session.update({"user": user.username, "role": user.role.name})
+        request.session.update({"user": account.username, "role": account.role.name})
 
         return True
 
@@ -44,5 +44,5 @@ class AdminAuth(AuthenticationBackend):
         return True
 
     async def authenticate(self, request: Request) -> bool:
-        user = await self._get_user(request.session.get("user", ""))
-        return bool(user and user.is_active)
+        account = await self._get_account(request.session.get("user", ""))
+        return bool(account and account.is_active)

@@ -6,14 +6,14 @@ import sys
 from sqlalchemy import insert
 from sqlalchemy.exc import IntegrityError
 
-from src.auth.enums import Role
-from src.auth.models import User
-from src.auth.utils import hash_password
+from src.staff.enums import Role
+from src.staff.models import Staff
+from src.core.security import hash_password
 from src.core.database import session_maker
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Создание пользователя админки")
+    parser = argparse.ArgumentParser(description="Создание учётной записи персонала")
     parser.add_argument("-u", "--username", required=True, help="логин")
     parser.add_argument("-p", "--password", help="пароль; спросим, если не указан")
     parser.add_argument(
@@ -26,9 +26,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-async def create_user(username: str, password: str, role: str) -> None:
+async def create_staff(username: str, password: str, role: str) -> None:
     async with session_maker() as session:
-        query = insert(User).values(
+        query = insert(Staff).values(
             username=username,
             password=hash_password(password),
             role=role,
@@ -47,12 +47,12 @@ def main() -> int:
         return 1
 
     try:
-        asyncio.run(create_user(args.username, password, args.role))
+        asyncio.run(create_staff(args.username, password, args.role))
     except IntegrityError:
-        print(f"Пользователь {args.username!r} уже существует", file=sys.stderr)
+        print(f"Учётная запись {args.username!r} уже существует", file=sys.stderr)
         return 1
 
-    print(f"Создан пользователь {args.username!r} с ролью {args.role}")
+    print(f"Создана учётная запись {args.username!r} с ролью {args.role}")
     return 0
 
 

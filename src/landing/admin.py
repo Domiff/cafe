@@ -2,7 +2,7 @@ from fastapi import Request, Response
 
 from src.core.cache import invalidate_cache
 from src.admin.base import BaseAdmin
-from src.auth.enums import Role
+from src.staff.enums import Role
 from src.landing.models import Landing
 
 

@@ -4,37 +4,41 @@ from fastapi import Request
 from wtforms import SelectField
 
 from src.admin.filters import RuBooleanFilter
-from src.auth.enums import Role
-from src.auth.models import User
-from src.auth.utils import hash_password
+from src.staff.enums import Role
+from src.staff.models import Staff
+from src.core.security import hash_password
 from src.admin.base import BaseAdmin
 
 
-class UserAdmin(BaseAdmin, model=User):
+class StaffAdmin(BaseAdmin, model=Staff):
     allowed_roles = {Role.ADMIN.name}
     write_roles = {Role.ADMIN.name}
 
     column_list = [
-        User.username,
-        User.is_active,
-        User.role,
+        Staff.username,
+        Staff.is_active,
+        Staff.role,
     ]
     column_details_list = [
-        User.username,
-        User.password,
-        User.is_active,
-        User.role,
+        Staff.username,
+        Staff.password,
+        Staff.is_active,
+        Staff.role,
     ]
     column_labels = {
-        User.username: "Имя пользователя",
-        User.password: "Пароль",
-        User.is_active: "Статус",
-        User.role: "Роль",
+        Staff.username: "Имя пользователя",
+        Staff.password: "Пароль",
+        Staff.is_active: "Статус",
+        Staff.role: "Роль",
     }
-    column_searchable_list = [User.username]
-    column_sortable_list = [User.username, User.is_active, User.role]
+    column_searchable_list = [Staff.username]
+    column_sortable_list = [
+        Staff.username,
+        Staff.is_active,
+        Staff.role,
+    ]
     column_filters = [
-        RuBooleanFilter(User.is_active, title="Статус"),
+        RuBooleanFilter(Staff.is_active, title="Статус"),
     ]
 
     form_overrides = {"role": SelectField}
@@ -55,12 +59,11 @@ class UserAdmin(BaseAdmin, model=User):
     category = "Доступ"
     category_icon = "fa-solid fa-lock"
 
-    name = "Пользователь"
-    name_plural = "Пользователи"
+    name = "Учётная запись"
+    name_plural = "Учётные записи"
 
     async def on_model_change(
         self, data: dict, model: Any, is_created: bool, request: Request
     ) -> None:
         password = data.pop("password")
         data["password"] = hash_password(password)
-        

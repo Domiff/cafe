@@ -1,12 +1,12 @@
 from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from src.auth.enums import Role
+from src.staff.enums import Role
 from src.core.database import Base
 
 
-class User(Base):
-    __tablename__ = "users"
+class Staff(Base):
+    __tablename__ = "staff"
 
     username: Mapped[str] = mapped_column(String(50), unique=True)
     password: Mapped[str] = mapped_column(String(250))
