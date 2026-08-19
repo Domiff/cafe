@@ -44,7 +44,7 @@ class LoginSettings(AppSettings):
 
 
 class AdminSettings(AppSettings):
-    SECRET_KEY: str
+    ADMIN_SECRET_KEY: str
 
 
 class StorageSettings(AppSettings):
@@ -74,6 +74,14 @@ class RedisSettings(AppSettings):
         )
 
 
+class UsersSettings(AppSettings):
+    STRATEGY_SECRET_KEY: str
+    RESET_SECRET_KEY: str
+    VERIFICATION_SECRET_KEY: str
+    LIFETIME_SECONDS: int = 3600
+    TOKEN_URL: str = "auth/login"
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
@@ -81,6 +89,7 @@ class Settings(AppSettings):
     logging: LoginSettings = LoginSettings()
     storage: StorageSettings = StorageSettings()
     redis: RedisSettings = RedisSettings()
+    users: UsersSettings = UsersSettings()
 
 
 settings = Settings()
