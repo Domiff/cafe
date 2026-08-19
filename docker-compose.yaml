@@ -24,8 +24,6 @@ services:
     image: postgres:16
     env_file:
       - .env
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -39,8 +37,6 @@ services:
   redis:
     container_name: redis-cafe
     image: redis:8-alpine
-    ports:
-      - "${REDIS_PORT}:${REDIS_PORT}"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       start_period: 5s
