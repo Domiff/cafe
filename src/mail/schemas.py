@@ -1,16 +1,9 @@
-from fastapi_mail import MessageSchema, MessageType
-from pydantic import EmailStr
+from src.core.schemas import BaseSchema
+from src.mail.enums import MessageCode
 
 
-def get_message_schema(
-    subject: str,
-    email: EmailStr,
-    template_body: dict,
-    msg_type: MessageType = MessageType.html,
-) -> MessageSchema:
-    return MessageSchema(
-        subject=subject,
-        recipients=[email],
-        template_body=template_body,
-        subtype=msg_type,
-    )
+class MessageSchema(BaseSchema):
+    code: MessageCode
+    subject: str
+    title: str
+    body: str

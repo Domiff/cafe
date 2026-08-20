@@ -1,4 +1,4 @@
-from fastapi_mail import ConnectionConfig
+from fastapi_mail import ConnectionConfig, FastMail
 
 from src.core.config import settings
 
@@ -14,3 +14,4 @@ config = ConnectionConfig(
     USE_CREDENTIALS=settings.mail.USE_CREDENTIALS,
     VALIDATE_CERTS=settings.mail.VALIDATE_CERTS,
 )
+mail = FastMail(config)
