@@ -5,6 +5,7 @@ from sqladmin._menu import CategoryMenu
 from src.admin.auth import AdminAuth
 from src.staff.admin import StaffAdmin
 from src.landing.admin import LandingAdmin
+from src.mail.admin import MessageAdmin
 from src.cafe.admin import EmployeeAdmin, PositionAdmin, CategoryAdmin, ProductAdmin
 from src.core.config import settings
 from src.core.database import session_maker
@@ -39,4 +40,5 @@ def setup_admin(app: FastAPI) -> None:
     admin.add_view(ProductAdmin)
     admin.add_view(StaffAdmin)
     admin.add_view(LandingAdmin)
+    admin.add_view(MessageAdmin)
     admin.add_view(UserAdmin)
