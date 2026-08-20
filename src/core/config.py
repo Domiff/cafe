@@ -10,6 +10,8 @@ class AppSettings(BaseSettings):
     IS_DEBUG: bool = Field(default=True)
     IS_DOCKERIZED: bool = Field(default=False)
 
+    BASE_URL: str
+
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
