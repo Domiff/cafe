@@ -13,6 +13,7 @@ from src.cafe.models import Employee, Position, Category, Product  # noqa
 from src.staff.models import Staff  # noqa
 from src.landing.models import Landing  # noqa
 from src.users.models import User  # noqa
+from src.mail.models import Message  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
