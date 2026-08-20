@@ -4,8 +4,8 @@ A small website and back office for a coffee shop. Visitors get a landing page a
 a menu; staff get an admin panel where every piece of that content is editable —
 dishes, categories, prices, photos, the landing copy, and the employee roster.
 
-Built with FastAPI, SQLAlchemy 2 (async), SQLAdmin, fastapi-users and Jinja
-templates.
+Built with FastAPI, SQLAlchemy 2 (async), SQLAdmin, fastapi-users, fastapi-mail
+and Jinja templates.
 
 ## Features
 
@@ -25,8 +25,14 @@ Sections a role cannot open disappear from the sidebar entirely.
 bearer token. These accounts are separate from the staff accounts above: the
 admin panel keeps its own session cookie, and the two contours share nothing but
 password hashing. Customer records are visible in the admin panel but read-only,
-apart from the flag that blocks an account. Password reset and email
-verification are not wired up yet — there is no mail transport in the project.
+apart from the flag that blocks an account.
+
+**Transactional email** — an SMTP client and a sending service for the messages
+the site needs: address verification, a welcome note, a password reset link. The
+wording of each one lives in the database and is editable in the admin panel,
+while the HTML layout stays in the repository, so copy changes need no deploy. A
+fresh database starts with an empty table; the texts are filled in from the admin
+panel.
 
 **Image uploads** go to S3-compatible storage. The database keeps the object key,
 the template renders a full URL.
@@ -68,13 +74,31 @@ AWS_S3_USE_SSL=True
 
 LOGTAIL_TOKEN=<token>
 LOGTAIL_HOST=<host>
+
+BASE_URL=http://localhost:8000
+
+MAIL_USERNAME=<smtp login>
+MAIL_PASSWORD=<smtp password>
+MAIL_FROM=no-reply@example.com
+MAIL_SERVER=localhost
+MAIL_PORT=1025
+MAIL_STARTTLS=false
+MAIL_SSL_TLS=false
+USE_CREDENTIALS=true
+VALIDATE_CERTS=true
 ```
 
 `ADMIN_SECRET_KEY` signs admin session cookies and the three user secrets sign
 API tokens; together with the Logtail pair they are required at startup, so set
 them even when you are only trying the project out. Use a different value for
-each. The reset and verification secrets are asked for even though the matching
-endpoints are not mounted yet. Everything else has a working default.
+each. Everything else has a working default.
+
+`BASE_URL` is the origin used to build links inside emails, so it has to match
+the address people actually open. The mail settings have no defaults either.
+During development point them at a local fake SMTP such as Mailpit
+(`localhost:1025`, both TLS flags off, no credentials); in production use a real
+server, where port 465 means `MAIL_SSL_TLS=true` and port 587 means
+`MAIL_STARTTLS=true` — never both.
 
 `IS_DOCKERIZED` decides where the app looks for its dependencies: when it is set,
 PostgreSQL replaces SQLite and the Redis host becomes the compose service name.
@@ -133,7 +157,8 @@ src/
   staff/     Staff accounts and roles
   users/     API accounts: model, manager, auth backend, admin view
   landing/   Landing page content
-templates/   Jinja templates, including sqladmin overrides
+  mail/      Transactional email: message texts, SMTP client, sending service
+templates/   Jinja templates, including sqladmin overrides and the email layout
 static/      Stylesheet shared by the landing page and the menu
 scripts/     One-off maintenance commands
 ```
