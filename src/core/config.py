@@ -82,6 +82,19 @@ class UsersSettings(AppSettings):
     TOKEN_URL: str = "auth/login"
 
 
+class MailSettings(AppSettings):
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_PORT: int
+    MAIL_SERVER: str
+    MAIL_STARTTLS: bool
+    MAIL_SSL_TLS: bool
+    USE_CREDENTIALS: bool
+    VALIDATE_CERTS: bool
+    TEMPLATE_FOLDER: Path = BASE_DIR / "templates" / "mail"
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
@@ -90,6 +103,7 @@ class Settings(AppSettings):
     storage: StorageSettings = StorageSettings()
     redis: RedisSettings = RedisSettings()
     users: UsersSettings = UsersSettings()
+    mail: MailSettings = MailSettings()
 
 
 settings = Settings()
