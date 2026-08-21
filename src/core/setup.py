@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
@@ -11,7 +13,7 @@ from src.users.router import router as users_router
 
 logger = get_logger(__name__)
 
-
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.debug("Starting application")
 
