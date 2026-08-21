@@ -45,5 +45,21 @@ services:
       retries: 5
     restart: unless-stopped
 
+  mailpit:
+    container_name: mailpit-cafe
+    image: axllent/mailpit
+    env_file:
+      - .env
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    healthcheck:
+      test: [ "CMD", "/mailpit", "readyz" ]
+      start_period: 5s
+      interval: 1m
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
 volumes:
   pgdata:
