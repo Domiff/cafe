@@ -8,8 +8,6 @@ BASE_DIR: Path = Path(__file__).parent.parent.parent
 
 class AppSettings(BaseSettings):
     IS_DEBUG: bool = Field(default=True)
-    IS_DOCKERIZED: bool = Field(default=False)
-
     BASE_URL: str
 
     model_config = SettingsConfigDict(
@@ -36,7 +34,7 @@ class DBSettings(AppSettings):
         object.__setattr__(
             self,
             "DB_URL",
-            self.get_pg_url() if self.IS_DOCKERIZED else self.SQLITE_URL,
+            self.SQLITE_URL if self.IS_DEBUG else self.get_pg_url(),
         )
 
 
@@ -66,7 +64,7 @@ class RedisSettings(AppSettings):
 
     def model_post_init(self, __context) -> None:
         object.__setattr__(
-            self, "REDIS_HOST", "redis" if self.IS_DOCKERIZED else "localhost"
+            self, "REDIS_HOST", "localhost" if self.IS_DEBUG else "redis"
         )
         object.__setattr__(
             self,
