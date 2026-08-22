@@ -4,7 +4,8 @@ services:
     build:
       dockerfile: Dockerfile
     environment:
-      IS_DOCKERIZED: "true"
+      IS_DEBUG: "false"
+      MAIL_SERVER: mailpit
     env_file:
       .env
     command: ./run.sh
@@ -14,6 +15,8 @@ services:
       pg:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     volumes:
       - ./templates:/app/templates
@@ -61,5 +64,46 @@ services:
       retries: 5
     restart: unless-stopped
 
+  rabbitmq:
+    container_name: rabbitmq-cafe
+    image: rabbitmq:4-management
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      start_period: 20s
+      interval: 1m
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  taskiq:
+    container_name: taskiq-cafe
+    build:
+      dockerfile: Dockerfile
+    environment:
+      IS_DEBUG: "false"
+      MAIL_SERVER: mailpit
+    env_file:
+      .env
+    command: ./taskiq.sh
+    depends_on:
+      pg:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./templates:/app/templates
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  rabbitmq_data:
