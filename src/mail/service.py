@@ -51,3 +51,7 @@ class MailService:
     async def send_reset_password(self, email: EmailStr, token: str):
         link = f"{settings.BASE_URL}/auth/reset-password?token={token}"
         await self._send(MessageCode.RESET_PASSWORD, email, link)
+
+
+def get_mail_service(session: AsyncSession) -> MailService:
+    return MailService(session=session)
