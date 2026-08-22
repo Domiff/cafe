@@ -96,6 +96,24 @@ class MailSettings(AppSettings):
     TEMPLATE_FOLDER: Path = BASE_DIR / "templates" / "mail"
 
 
+class RabbitMQSettings(AppSettings):
+    RABBITMQ_USER: str = "guest"
+    RABBITMQ_PASSWORD: str = "guest"
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int = 5672
+
+    def model_post_init(self, __context) -> None:
+        object.__setattr__(
+            self, "RABBITMQ_HOST", "localhost" if self.IS_DEBUG else "rabbitmq"
+        )
+        object.__setattr__(
+            self,
+            "RABBITMQ_URL",
+            f"amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}"
+            f"@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}//",
+        )
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
@@ -105,6 +123,7 @@ class Settings(AppSettings):
     redis: RedisSettings = RedisSettings()
     users: UsersSettings = UsersSettings()
     mail: MailSettings = MailSettings()
+    rabbit: RabbitMQSettings = RabbitMQSettings()
 
 
 settings = Settings()
