@@ -40,9 +40,8 @@ class DBSettings(AppSettings):
         )
 
 
-class LoginSettings(AppSettings):
-    LOGTAIL_TOKEN: str
-    LOGTAIL_HOST: str
+class LoggingSettings(AppSettings):
+    LOG_LEVEL: str = "INFO"
 
 
 class AdminSettings(AppSettings):
@@ -101,7 +100,7 @@ class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
     admin: AdminSettings = AdminSettings()
-    logging: LoginSettings = LoginSettings()
+    logging: LoggingSettings = LoggingSettings()
     storage: StorageSettings = StorageSettings()
     redis: RedisSettings = RedisSettings()
     users: UsersSettings = UsersSettings()
