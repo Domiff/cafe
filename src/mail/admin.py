@@ -35,7 +35,7 @@ class MessageAdmin(BaseAdmin, model=Message):
     column_default_sort = [(Message.code, False)]
     column_searchable_list = [Message.subject, Message.body]
 
-    form_edit_rules = ["subject", "title", "body", "is_active"]
+    form_create_rules = form_edit_rules = ["code", "subject", "title", "body", "is_active"]
     form_widget_args = {
         "body": {"rows": 8},
         "subject": {"placeholder": "Видно в списке входящих"},
