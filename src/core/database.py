@@ -21,6 +21,11 @@ class Base(DeclarativeBase):
     )
 
 
+class BaseRepository:
+    def __init__(self, session: AsyncSession):
+        self.session: AsyncSession = session
+
+
 engine = create_async_engine(settings.db.DB_URL)
 session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -28,9 +33,6 @@ session_maker = async_sessionmaker(engine, expire_on_commit=False)
 async def get_session() -> AsyncGenerator[AsyncSession]:
     async with session_maker() as session:
         yield session
-
-
-SessionDep = Annotated[AsyncSession, Depends(get_session)]
 
 
 async def ping_database() -> bool:
@@ -42,7 +44,4 @@ async def ping_database() -> bool:
         return False
 
 
-class BaseRepository:
-    def __init__(self, session: AsyncSession):
-        self.session: AsyncSession = session
-
+SessionDep = Annotated[AsyncSession, Depends(get_session)]
