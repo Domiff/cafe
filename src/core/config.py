@@ -112,6 +112,11 @@ class RabbitMQSettings(AppSettings):
         )
 
 
+class TaskiqSettings(AppSettings):
+    TASKIQ_RETRY_COUNT: int = 5
+    TASKIQ_RETRY_DELAY: float | int = 10
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
@@ -122,6 +127,7 @@ class Settings(AppSettings):
     users: UsersSettings = UsersSettings()
     mail: MailSettings = MailSettings()
     rabbit: RabbitMQSettings = RabbitMQSettings()
+    taskiq: TaskiqSettings = TaskiqSettings()
 
 
 settings = Settings()
