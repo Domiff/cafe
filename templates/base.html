@@ -9,20 +9,7 @@
 </head>
 <body>
 <header class="site-header">
-  <div class="container site-header__inner">
-    <a class="site-brand" href="/">Зерно</a>
-
-    <nav class="site-nav">
-      <a href="/menu">Меню</a>
-      <a href="/#about">О нас</a>
-      <a href="/#contacts">Контакты</a>
-    </nav>
-
-    <div class="site-meta">
-      <span>Пн–Пт 8:00–22:00, Сб–Вс 9:00–23:00</span>
-      <a class="site-meta__phone" href="tel:+79001184201">+7 900 118-42-01</a>
-    </div>
-  </div>
+  {% block header %}{% endblock header %}
 </header>
 
 <main class="container">
@@ -30,9 +17,7 @@
 </main>
 
 <footer class="site-footer">
-  <div class="container">
-    {% block footer %}Зерно — ул. Пушкина, 12{% endblock %}
-  </div>
+  {% block footer %}{% endblock footer %}
 </footer>
 </body>
 </html>

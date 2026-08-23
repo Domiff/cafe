@@ -2,6 +2,8 @@
 
 {% block title %}{{ product.name }} — Зерно{% endblock %}
 
+{% block header %}{% include "components/header.html" %}{% endblock header %}
+
 {% block content %}
 <nav class="crumbs">
   <a href="/menu">Меню</a>
@@ -49,3 +51,5 @@
   </div>
 </article>
 {% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

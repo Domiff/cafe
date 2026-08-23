@@ -2,6 +2,8 @@
 
 {% block title %}{{ landing.title }}{% endblock %}
 
+{% block header %}{% include "components/header.html" %}{% endblock header %}
+
 {% block content %}
 <section class="hero">
   <div class="hero__body">
@@ -58,9 +60,9 @@
 {% endif %}
 
 <section class="section" id="contacts">
-  <div class="section__head">
-    <h2 class="section__title">Как нас найти</h2>
-  </div>
+  <h2 class="section__title">Как нас найти</h2>
+
+  <br>
 
   <dl class="specs">
     <div class="specs__row">
@@ -93,3 +95,5 @@
   {% endif %}
 </section>
 {% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

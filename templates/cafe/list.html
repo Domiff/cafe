@@ -2,6 +2,8 @@
 
 {% block title %}Меню — Зерно{% endblock %}
 
+{% block header %}{% include "components/header.html" %}{% endblock header %}
+
 {% block content %}
 <div class="page-head">
   <h1 class="page-title">Меню</h1>
@@ -51,3 +53,5 @@
   <p class="empty">Меню пока пустое.</p>
 {% endfor %}
 {% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

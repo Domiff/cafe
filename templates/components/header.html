@@ -1,0 +1,29 @@
+{% set on_home = request.url.path == "/" %}
+
+<div class="container site-header__inner">
+  {# бренд стоит на всех страницах: это идентичность, а не навигация.
+     На самой главной он остаётся на месте, но перестаёт быть ссылкой. #}
+  {% if on_home %}
+    <span class="site-brand">Зерно</span>
+  {% else %}
+    <a class="site-brand" href="/">Зерно</a>
+  {% endif %}
+
+  <nav class="site-nav">
+    <a href="/menu">Меню</a>
+  </nav>
+
+  {# cafe приходит из обработчика контекста, поэтому доступен на любой странице #}
+  {% if cafe %}
+  <div class="site-meta">
+    {% if cafe.working_hours %}
+    <span class="site-meta__hours">{{ cafe.working_hours }}</span>
+    {% endif %}
+    {% if cafe.phone %}
+    <a class="site-meta__phone" href="tel:{{ cafe.phone | replace(' ', '') | replace('-', '') }}">{{ cafe.phone }}</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <a class="site-account" href="/account">Аккаунт</a>
+</div>
