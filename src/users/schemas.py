@@ -1,13 +1,15 @@
 from fastapi_users import schemas
 
+from src.core.schemas import BaseSchema, UTCDatetime
 
-class UserRead(schemas.BaseUser[int]):
+
+class UserRead(BaseSchema, schemas.BaseUser[int]):
+    created_at: UTCDatetime
+
+
+class UserCreate(BaseSchema, schemas.BaseUserCreate):
     pass
 
 
-class UserCreate(schemas.BaseUserCreate):
-    pass
-
-
-class UserUpdate(schemas.BaseUserUpdate):
+class UserUpdate(BaseSchema, schemas.BaseUserUpdate):
     pass
