@@ -12,6 +12,8 @@
   --gap: 24px;
   --container: 1120px;
   --shadow: 0 1px 2px rgba(59, 53, 45, .04), 0 6px 20px rgba(59, 53, 45, .05);
+
+  --icon-user: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E");
 }
 
 *,
@@ -22,6 +24,10 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--text);
   font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -36,6 +42,17 @@ a {
 a:hover {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+/* :focus-visible, а не :focus — обводка появляется при навигации с клавиатуры
+   и не вспыхивает при клике мышью */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 img {
@@ -99,8 +116,12 @@ img {
   font-weight: 600;
 }
 
+main.container {
+  flex: 1;
+  padding-bottom: 96px;
+}
+
 .site-footer {
-  margin-top: 96px;
   padding: 32px 0;
   border-top: 1px solid var(--line);
   color: var(--muted);
@@ -456,5 +477,339 @@ img {
 
     .site-meta > span {
     display: none;
+  }
+}
+
+/* ---------- страницы входа, регистрации и выхода ---------- */
+
+.auth {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 72px 0 0;
+}
+
+.auth h1 {
+  margin: 0 0 20px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.auth-form label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* подпись, идущая следом за полем, начинает новую пару — ей нужен отступ сверху */
+.auth-form input + label {
+  margin-top: 12px;
+}
+
+.auth-form input {
+  padding: 11px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(176, 131, 86, .15);
+}
+
+.auth-form button {
+  margin-top: 20px;
+  padding: 12px 22px;
+  font: inherit;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.auth-form button:hover {
+  background: #9c7249;
+  border-color: #9c7249;
+}
+
+.form-error {
+  margin: 12px 0 0;
+  color: #a8442e;
+  font-size: 14px;
+}
+
+.form-error:empty {
+  display: none;
+}
+
+.form-note {
+  margin: 12px 0 0;
+  color: #4d6b44;
+  font-size: 14px;
+}
+
+.form-note:empty {
+  display: none;
+}
+
+/* .auth-form задаёт display:flex, а он перебивает браузерное правило для
+   атрибута hidden — без !important спрятать форму из скрипта не выйдет */
+[hidden] {
+  display: none !important;
+}
+
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.auth-success__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+.auth-success__text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+
+
+.site-back {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.site-back:hover {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.auth__aside {
+  margin: 14px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.auth__aside + .auth__aside {
+  margin-top: 6px;
+}
+
+.auth__aside a {
+  color: var(--accent);
+}
+
+.site-meta__hours {
+  display: none;
+}
+
+@media (min-width: 1000px) {
+  .site-meta__hours {
+    display: inline;
+  }
+}
+
+.site-account {
+  margin-left: 20px;
+  /* вертикальный отступ поднимает область нажатия до рекомендованных 44px,
+     слева — просвет до разделителя */
+  padding: 12px 0 12px 20px;
+  /* черта отделяет личный раздел от навигации и контактов */
+  border-left: 1px solid var(--line);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.site-account::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  background: currentColor;
+  /* контур человека: маска, поэтому иконка перекрашивается вместе с текстом */
+  mask: var(--icon-user) center / contain no-repeat;
+  -webkit-mask: var(--icon-user) center / contain no-repeat;
+}
+
+.site-account:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+
+/* ---------- аккаунт ---------- */
+
+.profile {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 64px 0 0;
+}
+
+.profile__loading {
+  margin: 0;
+  padding: 48px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.profile__guest {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.profile__guest-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+
+.profile__guest-text {
+  margin: 0;
+  color: var(--muted);
+}
+
+.profile__guest .button {
+  align-self: center;
+}
+
+.profile__head {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile__avatar {
+  flex: none;
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+}
+
+.profile__ident {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile__email {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
+
+.chip--ok {
+  background: #eef2ea;
+  color: #4d6b44;
+}
+
+.chip--warn {
+  background: #f8ece8;
+  color: #99432f;
+}
+
+.chip--accent {
+  background: var(--accent);
+  color: #fff;
+}
+
+.notice {
+  margin-top: 28px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.notice__text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.notice .button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.notice .button:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.profile__actions {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .profile__head {
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .profile__avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+
+  .profile__email {
+    font-size: 20px;
   }
 }
