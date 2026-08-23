@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Аккаунт — Зерно{% endblock %}
+
+{% block header %}{% include "users/components/header.html" %}{% endblock header %}
+
+{% block head %}
+  <script defer>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const loading = document.getElementById("loading");
+      const guest = document.getElementById("guest");
+      const profile = document.getElementById("profile");
+
+      const user = await load();
+
+      loading.hidden = true;
+
+      if (user) {
+        render(user);
+        profile.hidden = false;
+      } else {
+        guest.hidden = false;
+      }
+
+      async function load() {
+        const token = localStorage.getItem("access_token");
+        if (!token) return null;
+
+        let response;
+
+        try {
+          response = await fetch("/users/me", {
+            headers: {"Authorization": `Bearer ${token}`},
+          });
+        } catch {
+          return null;
+        }
+
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem("access_token");
+          return null;
+        }
+
+        return response.ok ? await response.json() : null;
+      }
+
+      function render(user) {
+        document.getElementById("avatar").textContent = user.email[0].toUpperCase();
+        document.getElementById("email").textContent = user.email;
+        showDate(user.created_at);
+        document.getElementById("role").textContent =
+          user.is_superuser ? "Администратор" : "Гость";
+
+        chip(user.is_verified ? "Почта подтверждена" : "Почта не подтверждена",
+             user.is_verified ? "chip--ok" : "chip--warn");
+        chip(user.is_active ? "Активен" : "Отключён",
+             user.is_active ? "" : "chip--warn");
+
+        if (user.is_superuser) chip("Администратор", "chip--accent");
+
+        if (!user.is_verified) {
+          document.getElementById("unverified").hidden = false;
+          resend(user.email);
+        }
+      }
+
+      function showDate(iso) {
+        const cell = document.getElementById("created_at");
+        const time = document.createElement("time");
+
+        // машинное значение остаётся в атрибуте — его читают скринридеры и поисковики,
+        // человек видит текст
+        time.dateTime = iso;
+        time.textContent = new Date(iso).toLocaleString("ru-RU", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        cell.replaceChildren(time);
+      }
+
+      function chip(text, modifier) {
+        const el = document.createElement("span");
+        el.className = modifier ? `chip ${modifier}` : "chip";
+        el.textContent = text;
+        document.getElementById("chips").append(el);
+      }
+
+      function resend(email) {
+        const button = document.getElementById("resend");
+        const note = document.getElementById("note");
+
+        button.addEventListener("click", async () => {
+          note.textContent = "";
+          button.disabled = true;
+
+          const response = await fetch("/auth/request-verify-token", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email}),
+          });
+
+          if (response.ok) {
+            note.textContent = "Письмо отправлено. Проверьте почту.";
+            return;
+          }
+
+          note.textContent = "Не получилось отправить письмо. Попробуйте позже.";
+          button.disabled = false;
+        });
+      }
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="profile">
+
+  <p class="profile__loading" id="loading">Загружаем аккаунт…</p>
+
+  <div class="profile__guest" id="guest" hidden>
+    <h1 class="profile__guest-title">Вы не вошли</h1>
+    <p class="profile__guest-text">Войдите, чтобы увидеть свой аккаунт.</p>
+    <a class="button button--accent" href="/login">Войти</a>
+    <p class="auth__aside">
+      Нет аккаунта? <a href="/register">Зарегистрируйтесь</a>
+    </p>
+  </div>
+
+  <div id="profile" hidden>
+    <div class="profile__head">
+      <div class="profile__avatar" id="avatar" aria-hidden="true"></div>
+
+      <div class="profile__ident">
+        <h1 class="profile__email" id="email"></h1>
+        <div class="facts" id="chips"></div>
+      </div>
+    </div>
+
+    <div class="notice" id="unverified" hidden>
+      <p class="notice__text">
+        Подтвердите адрес — без этого не получится восстановить пароль,
+        если вы его забудете.
+      </p>
+      <button class="button" type="button" id="resend">Выслать письмо ещё раз</button>
+      <p class="form-note" id="note" role="status"></p>
+    </div>
+
+    <section class="section">
+      <div class="section__head">
+        <h2 class="section__title">Учётная запись</h2>
+      </div>
+
+      <dl class="specs">
+        <div class="specs__row"><dt>Дата регистрации</dt><dd id="created_at"></dd></div>
+        <div class="specs__row"><dt>Роль</dt><dd id="role"></dd></div>
+      </dl>
+    </section>
+
+    <div class="profile__actions">
+      <a class="button" href="/forgot-password">Сменить пароль</a>
+      <a class="button" href="/logout">Выйти</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

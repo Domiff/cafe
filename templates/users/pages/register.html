@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — Зерно{% endblock %}
+
+{% block header %}{% include "users/components/header.html" %}{% endblock header %}
+
+{% block head %}
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("register");
+      const error = document.getElementById("error");
+      const success = document.getElementById("success");
+      const button = form.querySelector("button");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.textContent = "";
+        button.disabled = true;
+
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+
+        if (!response.ok) {
+          const detail = (await response.json()).detail;
+          if (detail === "REGISTER_USER_ALREADY_EXISTS") {
+            error.textContent = "Такая почта уже зарегистрирована.";
+          } else if (detail && detail.code === "REGISTER_INVALID_PASSWORD") {
+            error.textContent = detail.reason || "Пароль не подходит.";
+          } else {
+            error.textContent = "Проверьте правильность адреса почты.";
+          }
+          button.disabled = false;
+          return;
+        }
+        document.getElementById("sent-to").textContent = form.elements.email.value;
+        form.hidden = true;
+        document.getElementById("aside").hidden = true;
+        success.hidden = false;
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h1>Регистрация</h1>
+
+  <form class="auth-form" action="/auth/register" method="post" id="register">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" autocomplete="email" required>
+
+    <label for="password">Пароль</label>
+    <input type="password" id="password" name="password" autocomplete="new-password" required>
+
+    <p class="form-error" id="error" role="alert"></p>
+
+    <button type="submit">Регистрация</button>
+  </form>
+
+  <p class="auth__aside" id="aside">
+    Уже есть аккаунт? <a href="/login">Войдите</a>
+  </p>
+
+  <div class="auth-success" id="success" hidden>
+    <h2 class="auth-success__title">Проверьте почту</h2>
+    <p class="auth-success__text">
+      Мы отправили письмо на <b id="sent-to"></b>. Перейдите по ссылке из письма,
+      чтобы подтвердить адрес — после этого можно будет войти.
+    </p>
+    <a class="button" href="/">На главную</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

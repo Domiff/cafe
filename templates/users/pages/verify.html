@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Подтверждение почты — Зерно{% endblock %}
+
+{% block header %}{% include "users/components/header.html" %}{% endblock header %}
+
+{% block head %}
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("verify");
+      const error = document.getElementById("error");
+      const button = form.querySelector("button");
+      const token = new URLSearchParams(window.location.search).get("token");
+
+      if (!token) {
+        error.textContent = "Ссылка неполная. Откройте её из письма целиком.";
+        button.disabled = true;
+        return;
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.textContent = "";
+        button.disabled = true;
+
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({token}),
+        });
+
+        const detail = response.ok ? null : (await response.json()).detail;
+
+        if (response.ok || detail === "VERIFY_USER_ALREADY_VERIFIED") {
+          window.location.href = "/login";
+          return;
+        }
+
+        error.textContent = detail === "VERIFY_USER_BAD_TOKEN"
+          ? "Ссылка устарела или уже использована. Запросите письмо заново."
+          : "Не получилось подтвердить почту. Попробуйте ещё раз.";
+        button.disabled = false;
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="auth">
+  <h1>Подтверждение почты</h1>
+
+  <form class="auth-form" action="/auth/verify" method="post" id="verify">
+    <p class="form-error" id="error" role="alert"></p>
+
+    <button type="submit">Подтвердить почту</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}

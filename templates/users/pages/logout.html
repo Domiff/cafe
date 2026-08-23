@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Выход — Зерно{% endblock %}
+
+{% block header %}{% include "users/components/header.html" %}{% endblock header %}
+
+{% block head %}
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("logout");
+      const error = document.getElementById("error");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.textContent = "";
+
+        const token = localStorage.getItem("access_token");
+
+        if (token) {
+          const response = await fetch(form.action, {
+            method: "POST",
+            headers: {"Authorization": `Bearer ${token}`},
+          });
+
+          if (!response.ok && response.status !== 401) {
+            error.textContent = "Не получилось выйти. Попробуйте ещё раз.";
+            return;
+          }
+        }
+
+        localStorage.removeItem("access_token");
+        window.location.href = "/login";
+      });
+    });
+  </script>
+{% endblock head %}
+
+{% block content %}
+<div class="auth">
+  <h1>Выход</h1>
+
+  <form class="auth-form" action="/auth/logout" method="post" id="logout">
+    <p class="form-error" id="error" role="alert"></p>
+
+    <button type="submit">Выйти</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block footer %}{% include "components/footer.html" %}{% endblock footer %}
