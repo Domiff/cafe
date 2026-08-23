@@ -1,5 +1,5 @@
 #!/bin/sh
-uv run taskiq worker src.core.broker:broker \
+taskiq worker src.core.broker:broker \
   --fs-discover \
   --tasks-pattern "src/**/tasks.py" \
   --no-configure-logging \
