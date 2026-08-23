@@ -1,6 +1,6 @@
 from fastapi import Request, Response
 
-from src.core.cache import invalidate_cache
+from src.core.cache import invalidate_cache, redis
 from src.admin.base import BaseAdmin
 from src.staff.enums import Role
 from src.landing.models import Landing
@@ -95,3 +95,4 @@ class LandingAdmin(BaseAdmin, model=Landing):
         self, data: dict, model: Landing, is_created: bool, request: Request
     ) -> Response | None:
         await invalidate_cache("landing")
+        await redis.delete("cafe")

@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 
 from src.admin.setup import setup_admin
@@ -8,6 +8,7 @@ from src.core.broker import broker
 from src.core.cache import setup_cache
 from src.core.config import settings
 from src.core.logging import get_logger, setup_logging
+from src.landing.context import load_cafe
 from src.cafe.router import router as cafe_router
 from src.landing.router import router as landing_router
 from src.users.routers import auth_router, pages_router, users_router
@@ -44,6 +45,14 @@ def create_app() -> FastAPI:
         openapi_url="/openapi.json" if settings.app.IS_DEBUG else None,
     )
     app.mount("/static", StaticFiles(directory="static"), name="static")
+
+    @app.middleware("http")
+    async def attach_cafe(request: Request, call_next):
+        if not request.url.path.startswith("/static"):
+            request.state.cafe = await load_cafe()
+
+        return await call_next(request)
+
     app.include_router(cafe_router)
     app.include_router(landing_router)
     app.include_router(pages_router)
