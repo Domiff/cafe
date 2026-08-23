@@ -45,11 +45,11 @@ class MailService:
         await self._send(MessageCode.REGISTER, email)
 
     async def send_verify(self, email: EmailStr, token: str):
-        link = f"{settings.BASE_URL}/auth/verify-page?token={token}"
+        link = f"{settings.BASE_URL}/verify?token={token}"
         await self._send(MessageCode.VERIFY, email, link)
 
     async def send_reset_password(self, email: EmailStr, token: str):
-        link = f"{settings.BASE_URL}/auth/reset-password-page?token={token}"
+        link = f"{settings.BASE_URL}/reset-password?token={token}"
         await self._send(MessageCode.RESET_PASSWORD, email, link)
 
 
