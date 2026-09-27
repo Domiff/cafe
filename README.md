@@ -50,6 +50,12 @@ header and footer need — name, address, phone, hours — are cached as JSON an
 handed to every template through a context processor, so the shared chrome reads
 from the database without querying it on each page.
 
+**Rate limiting** through fastapi-guard, with counters in Redis so the limits
+hold across workers. A generous global limit covers the whole site, including
+static files, and the auth endpoints get stricter per-path limits on top of it —
+five login attempts a minute, three registrations, and a few password reset and
+verification requests every five minutes. Exceeding a limit returns `429`.
+
 ## Running with Docker
 
 ```bash
@@ -118,11 +124,11 @@ The codebase is split by responsibility rather than by file type.
 
 ```
 src/
-  core/      Infrastructure: settings, database, cache, storage, templates, hashing
+  core/      Infrastructure: settings, database, cache, storage, templates, rate limiting
   admin/     Admin panel building blocks: auth backend, base view, role mixin, filters
   cafe/      Menu domain: models, repository, routes, admin views
   staff/     Staff accounts and roles
-  users/     API accounts: model, manager, auth backend, routers, admin view
+  users/     API accounts: model, manager, auth backend, routers, admin view, password hashing
   landing/   Landing page content and the shared cafe details
   mail/      Transactional email: message texts, SMTP client, sending service, tasks
 templates/
@@ -160,3 +166,6 @@ the cache:
 ```bash
 docker exec redis-cafe redis-cli FLUSHDB
 ```
+
+The same command resets the rate limit counters if you lock yourself out of the
+auth endpoints while testing.
