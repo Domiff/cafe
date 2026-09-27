@@ -7,6 +7,7 @@ from fastapi_users.db import SQLAlchemyUserDatabase
 from src.mail.tasks import send_reset_password_task, send_register_task, send_verify_task
 from src.core.logging import get_logger
 from src.users.models import User
+from src.users.utils import password_helper
 from src.core.database import SessionDep
 from src.core.config import settings
 
@@ -42,6 +43,6 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
 
 
 async def get_user_manager(session: SessionDep) -> UserManager:
-    return UserManager(SQLAlchemyUserDatabase(session, User))
+    return UserManager(SQLAlchemyUserDatabase(session, User), password_helper)
 
 UserManagerDep = Annotated[UserManager, Depends(get_user_manager)]

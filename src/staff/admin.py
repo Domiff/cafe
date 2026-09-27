@@ -6,7 +6,7 @@ from wtforms import SelectField
 from src.admin.filters import RuBooleanFilter
 from src.staff.enums import Role
 from src.staff.models import Staff
-from src.core.security import hash_password
+from src.users.utils import hash_password
 from src.admin.base import BaseAdmin
 
 

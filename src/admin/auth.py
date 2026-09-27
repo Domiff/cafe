@@ -4,7 +4,7 @@ from sqladmin.authentication import AuthenticationBackend
 
 from src.staff.models import Staff
 from src.staff.repository import get_staff_repo
-from src.core.security import check_password
+from src.users.utils import verify_password
 from src.core.database import session_maker
 
 
@@ -28,7 +28,7 @@ class AdminAuth(AuthenticationBackend):
             return False
 
         try:
-            is_valid = check_password(password, account.password)
+            is_valid = verify_password(password, account.password)
         except UnknownHashError:
             return False
 
