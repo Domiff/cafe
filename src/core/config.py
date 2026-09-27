@@ -117,6 +117,15 @@ class TaskiqSettings(AppSettings):
     TASKIQ_RETRY_DELAY: float | int = 10
 
 
+class SecuritySettings(AppSettings):
+    ENABLE_RATE_LIMITING: bool = True
+    RATE_LIMIT: int = 200
+    RATE_LIMIT_WINDOW: int = 60
+    ENABLE_REDIS: bool = True
+    REDIS_PREFIX: str = "cafe:guard:"
+    CUSTOM_LOG_FILE: str = "logs/security.log"
+
+
 class Settings(AppSettings):
     app: AppSettings = AppSettings()
     db: DBSettings = DBSettings()
@@ -128,6 +137,7 @@ class Settings(AppSettings):
     mail: MailSettings = MailSettings()
     rabbit: RabbitMQSettings = RabbitMQSettings()
     taskiq: TaskiqSettings = TaskiqSettings()
+    security: SecuritySettings = SecuritySettings()
 
 
 settings = Settings()

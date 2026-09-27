@@ -8,6 +8,7 @@ from src.core.broker import broker
 from src.core.cache import setup_cache
 from src.core.config import settings
 from src.core.logging import get_logger, setup_logging
+from src.core.security import setup_security
 from src.landing.context import load_cafe
 from src.cafe.router import router as cafe_router
 from src.landing.router import router as landing_router
@@ -52,6 +53,9 @@ def create_app() -> FastAPI:
             request.state.cafe = await load_cafe()
 
         return await call_next(request)
+
+    setup_security(app)
+    logger.info("Security middleware configured")
 
     app.include_router(cafe_router)
     app.include_router(landing_router)
